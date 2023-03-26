@@ -1,0 +1,221 @@
+definitions:
+  models.CreateSettingInput:
+    properties:
+      key:
+        type: string
+      title:
+        type: string
+      value:
+        type: string
+    type: object
+  models.Settings:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: integer
+      key:
+        type: string
+      title:
+        type: string
+      updatedAt:
+        type: string
+      value:
+        type: string
+    type: object
+  models.UpdateSettingInput:
+    properties:
+      key:
+        type: string
+      title:
+        type: string
+      value:
+        type: string
+    type: object
+  v1.Response:
+    properties:
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /v1/settings:
+    get:
+      consumes:
+      - application/json
+      description: This api for get Settings
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Settings'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Response'
+      summary: Get all Settings
+      tags:
+      - Settings
+    post:
+      consumes:
+      - application/json
+      description: This API to create a setting.
+      parameters:
+      - description: data body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateSettingInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Settings'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Response'
+      summary: Create a setting.
+      tags:
+      - Settings
+  /v1/settings-url/{url}:
+    get:
+      consumes:
+      - application/json
+      description: This API to get setting by url.
+      parameters:
+      - description: url for get Setting
+        format: id
+        in: path
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Settings'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Response'
+      summary: Get setting by url.
+      tags:
+      - Settings
+  /v1/settings/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: This API to delete a setting.
+      parameters:
+      - description: id for delete Setting
+        format: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.Response'
+      summary: Delete a setting.
+      tags:
+      - Settings
+    get:
+      consumes:
+      - application/json
+      description: This API to get setting by id.
+      parameters:
+      - description: id for get Setting
+        format: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Settings'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Response'
+      summary: Get setting by id.
+      tags:
+      - Settings
+    put:
+      consumes:
+      - application/json
+      description: This API to update a setting.
+      parameters:
+      - description: id for update Setting
+        format: id
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: data body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateSettingInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Settings'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Response'
+      summary: Update a setting.
+      tags:
+      - Settings
+swagger: "2.0"
