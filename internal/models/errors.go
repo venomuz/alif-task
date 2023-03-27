@@ -22,6 +22,8 @@ var (
 	ErrWhileUpdate              = errors.New("error while update")
 	ErrWhileCreate              = errors.New("error while create")
 	ErrInvalidToken             = errors.New("invalid token")
+	ErrUnauthorized             = errors.New("you are not logged in")
+	ErrNotFoundAccountFromCtx   = errors.New("account is missing from ctx")
 	ErrPageNotFound             = errors.New("page not found")
 	ErrWhileSyncIiko            = errors.New("error while sync iiko")
 	ErrNotFoundFile             = errors.New("not found file")

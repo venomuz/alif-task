@@ -15,9 +15,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/v1/settings": {
-            "get": {
-                "description": "This api for get Settings",
+        "/api/v1/accounts/": {
+            "put": {
+                "description": "This API to update an account.",
                 "consumes": [
                     "application/json"
                 ],
@@ -25,39 +25,9 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Settings"
+                    "Accounts"
                 ],
-                "summary": "Get all Settings",
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/models.Settings"
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Response"
-                        }
-                    }
-                }
-            },
-            "post": {
-                "description": "This API to create a setting.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "Create a setting.",
+                "summary": "Update an account.",
                 "parameters": [
                     {
                         "description": "data body",
@@ -65,15 +35,15 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CreateSettingInput"
+                            "$ref": "#/definitions/models.UpdateAccountInput"
                         }
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Settings"
+                            "$ref": "#/definitions/models.AccountOut"
                         }
                     },
                     "400": {
@@ -97,9 +67,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/v1/settings-url/{url}": {
+        "/api/v1/accounts/me": {
             "get": {
-                "description": "This API to get setting by url.",
+                "description": "This API to get account by id.",
                 "consumes": [
                     "application/json"
                 ],
@@ -107,69 +77,14 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Settings"
+                    "Accounts"
                 ],
-                "summary": "Get setting by url.",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "format": "id",
-                        "description": "url for get Setting",
-                        "name": "url",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
+                "summary": "Get account by id.",
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.Settings"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Response"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/v1.Response"
-                        }
-                    }
-                }
-            }
-        },
-        "/v1/settings/{id}": {
-            "get": {
-                "description": "This API to get setting by id.",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Settings"
-                ],
-                "summary": "Get setting by id.",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "format": "id",
-                        "description": "id for get Setting",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/models.Settings"
+                            "$ref": "#/definitions/models.AccountOut"
                         }
                     },
                     "400": {
@@ -191,9 +106,11 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "put": {
-                "description": "This API to update a setting.",
+            }
+        },
+        "/api/v1/accounts/sing-in": {
+            "post": {
+                "description": "This API to Sing Up an account.",
                 "consumes": [
                     "application/json"
                 ],
@@ -201,33 +118,25 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Settings"
+                    "Accounts"
                 ],
-                "summary": "Update a setting.",
+                "summary": "Sing Up an account.",
                 "parameters": [
-                    {
-                        "type": "integer",
-                        "format": "id",
-                        "description": "id for update Setting",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
                     {
                         "description": "data body",
                         "name": "data",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.UpdateSettingInput"
+                            "$ref": "#/definitions/models.SingInAccountInput"
                         }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/models.Settings"
+                            "$ref": "#/definitions/models.Tokens"
                         }
                     },
                     "400": {
@@ -249,9 +158,11 @@ const docTemplate = `{
                         }
                     }
                 }
-            },
-            "delete": {
-                "description": "This API to delete a setting.",
+            }
+        },
+        "/api/v1/accounts/sing-up": {
+            "post": {
+                "description": "This API to Sing Up an account.",
                 "consumes": [
                     "application/json"
                 ],
@@ -259,22 +170,41 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Settings"
+                    "Accounts"
                 ],
-                "summary": "Delete a setting.",
+                "summary": "Sing Up an account.",
                 "parameters": [
                     {
-                        "type": "integer",
-                        "format": "id",
-                        "description": "id for delete Setting",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "data body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.SignUpAccountInput"
+                        }
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.AccountOut"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "409": {
+                        "description": "Conflict",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/v1.Response"
                         }
@@ -284,54 +214,126 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "models.CreateSettingInput": {
+        "models.AccountOut": {
             "type": "object",
             "properties": {
-                "key": {
+                "birthday": {
                     "type": "string"
                 },
-                "title": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "models.Settings": {
-            "type": "object",
-            "properties": {
                 "createdAt": {
                     "type": "string"
                 },
                 "id": {
-                    "type": "integer"
-                },
-                "key": {
                     "type": "string"
                 },
-                "title": {
+                "lastName": {
+                    "type": "string"
+                },
+                "lastVisit": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "phoneNumber": {
                     "type": "string"
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "models.SignUpAccountInput": {
+            "type": "object",
+            "required": [
+                "lastName",
+                "name",
+                "password",
+                "phoneNumber"
+            ],
+            "properties": {
+                "birthday": {
+                    "type": "string",
+                    "example": "2011-01-11T00:00:00Z"
                 },
-                "value": {
+                "lastName": {
+                    "type": "string",
+                    "minLength": 2,
+                    "example": "Farkhadov"
+                },
+                "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "example": "Aziz"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 60,
+                    "minLength": 5
+                },
+                "phoneNumber": {
+                    "type": "string",
+                    "maxLength": 12,
+                    "minLength": 12,
+                    "example": "998903456789"
+                }
+            }
+        },
+        "models.SingInAccountInput": {
+            "type": "object",
+            "required": [
+                "password",
+                "phoneNumber"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "maxLength": 60,
+                    "minLength": 5
+                },
+                "phoneNumber": {
+                    "type": "string",
+                    "maxLength": 12,
+                    "minLength": 12,
+                    "example": "998901231313"
+                }
+            }
+        },
+        "models.Tokens": {
+            "type": "object",
+            "properties": {
+                "accessToken": {
+                    "type": "string"
+                },
+                "refreshToken": {
                     "type": "string"
                 }
             }
         },
-        "models.UpdateSettingInput": {
+        "models.UpdateAccountInput": {
             "type": "object",
+            "required": [
+                "lastName",
+                "name"
+            ],
             "properties": {
-                "key": {
-                    "type": "string"
+                "lastName": {
+                    "type": "string",
+                    "minLength": 2,
+                    "example": "Farkhadov"
                 },
-                "title": {
-                    "type": "string"
+                "name": {
+                    "type": "string",
+                    "minLength": 2,
+                    "example": "Aziz"
                 },
-                "value": {
-                    "type": "string"
+                "password": {
+                    "type": "string",
+                    "maxLength": 60,
+                    "minLength": 5
                 }
             }
         },

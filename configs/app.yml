@@ -16,5 +16,6 @@ psql:
   database: app
 
 auth:
-  users_secret: s5v8y/B?E(H+MbQeThWmZq3t6w9z$C&F)J@NcRfUjXn2r5u7x!A%D*G-KaPdSgVk
-  users_key: user
+  jwt_signing_key: pnMZDLqtHwBnsVqHmCvRBZdBgP6eoQDdIn6mfRyfrdDHqsyK9ofLMfwBvGssPVavYKoMX5W4S6E6Q09KPCX1UAG
+  access_token_ttl: 2h
+  refresh_token_ttl: 720h #30 days

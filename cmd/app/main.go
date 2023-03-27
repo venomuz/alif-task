@@ -1,14 +1,23 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"github.com/venomuz/alif-task/internal/config"
 	"github.com/venomuz/alif-task/internal/migration"
 	"github.com/venomuz/alif-task/internal/service"
 	"github.com/venomuz/alif-task/internal/storage/psqlrepo"
 	"github.com/venomuz/alif-task/internal/transport/rest"
+	"github.com/venomuz/alif-task/internal/transport/rest/server"
+	"github.com/venomuz/alif-task/pkg/auth"
 	"github.com/venomuz/alif-task/pkg/database"
 	"github.com/venomuz/alif-task/pkg/hash"
 	"github.com/venomuz/alif-task/pkg/logger"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 func main() {
@@ -39,25 +48,55 @@ func main() {
 	// Initialize Repositories Postgresql
 	psqlRepos := psqlrepo.NewRepositories(DB)
 
+	// Initialize hasher
 	hasher := hash.NewPasswordHasher()
+
+	// Initialize Token Manager
+	tokenManager := auth.NewTokenManager(cfg.AUTH.JwtSigningKey)
 
 	// Initialize Services
 	services := service.NewServices(service.Deps{
-		PsqlRepo: psqlRepos,
-		Cfg:      cfg,
-		Hash:     hasher,
+		PsqlRepo:     psqlRepos,
+		Cfg:          cfg,
+		Hash:         hasher,
+		TokenManager: tokenManager,
 	})
 
 	// Rest API Load Handlers
 	handlers := rest.NewHandler(services, cfg)
 
 	// Initialize Rest API handlers
-	srv := handlers.Init()
+	srv := server.NewServer(cfg, handlers.Init())
 
-	// Run listener HTTP server
-	err = srv.Run(cfg.HTTP.Host + ":" + cfg.HTTP.Port)
-	if err != nil {
-		logger.Zap.Fatal("error while start server", logger.Error(err))
-		return
+	// Run server via goroutine
+	go func() {
+		if err := srv.Run(); !errors.Is(err, http.ErrServerClosed) {
+			logger.Zap.Error("error occurred while running http server", logger.Error(err))
+		}
+		loc, err := time.LoadLocation("America/New_York")
+		if err != nil {
+			panic(err)
+		}
+		time.Local = loc
+	}()
+
+	logger.Zap.Info("server is started")
+
+	// Graceful Shutdown
+	quit := make(chan os.Signal)
+
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	<-quit
+
+	logger.Zap.Info("shutdown server")
+
+	const timeout = 5 * time.Second
+
+	ctx, shutdown := context.WithTimeout(context.Background(), timeout)
+	defer shutdown()
+
+	if err := srv.Stop(ctx); err != nil {
+		logger.Zap.Fatal("filed to stop server", logger.Error(err))
 	}
 }

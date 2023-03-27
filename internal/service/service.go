@@ -5,6 +5,7 @@ import (
 	"github.com/venomuz/alif-task/internal/config"
 	"github.com/venomuz/alif-task/internal/models"
 	"github.com/venomuz/alif-task/internal/storage/psqlrepo"
+	"github.com/venomuz/alif-task/pkg/auth"
 	"github.com/venomuz/alif-task/pkg/hash"
 )
 
@@ -13,6 +14,7 @@ type Accounts interface {
 	SingIn(ctx context.Context, input models.SingInAccountInput) (models.Tokens, error)
 	Update(ctx context.Context, input models.UpdateAccountInput) (models.AccountOut, error)
 	GetByID(ctx context.Context, ID uint32) (models.AccountOut, error)
+	GetByAccessToken(ctx context.Context, accessToken string) (models.AccountOut, error)
 	GetAll(ctx context.Context) ([]models.AccountOut, error)
 }
 
@@ -26,9 +28,10 @@ type Settings interface {
 }
 
 type Deps struct {
-	PsqlRepo *psqlrepo.Repositories
-	Cfg      *config.Config
-	Hash     hash.PasswordHasher
+	PsqlRepo     *psqlrepo.Repositories
+	Cfg          config.Config
+	Hash         hash.PasswordHasher
+	TokenManager auth.TokenManager
 }
 
 type Services struct {
@@ -37,7 +40,7 @@ type Services struct {
 }
 
 func NewServices(deps Deps) *Services {
-	accountsService := NewAccountsService(deps.PsqlRepo.Accounts)
+	accountsService := NewAccountsService(deps.PsqlRepo.Accounts, deps.Hash, deps.TokenManager)
 	settingsService := NewSettingsService(deps.PsqlRepo.Settings)
 	return &Services{
 		Accounts: accountsService,

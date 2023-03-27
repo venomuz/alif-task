@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm/schema"
 )
 
-func NewClient(cfg *config.Config) (*gorm.DB, error) {
+func NewClient(cfg config.Config) (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable TimeZone=Asia/Shanghai",
 		cfg.PSQL.Host,
 		cfg.PSQL.Port,

@@ -1,12 +1,15 @@
 package models
 
-import "time"
+import (
+	"github.com/google/uuid"
+	"time"
+)
 
 type Accounts struct {
-	ID          uint32    `gorm:"type:serial not null;primaryKey"`
+	ID          uuid.UUID `gorm:"type:uuid not null;primaryKey"`
 	Name        string    `gorm:"type:varchar(60) not null"`
 	LastName    string    `gorm:"type:varchar(60) not null"`
-	PhoneNumber string    `gorm:"type:varchar(20) not null;index"`
+	PhoneNumber string    `gorm:"type:varchar(20) not null;index;unique"`
 	Password    string    `gorm:"type:varchar(60) not null"`
 	Birthday    time.Time `gorm:"type:date;default:null"`
 	LastVisit   time.Time `gorm:"type:timestamp;default:null"`
@@ -15,7 +18,7 @@ type Accounts struct {
 }
 
 type AccountOut struct {
-	ID          uint32     `json:"id"`
+	ID          uuid.UUID  `json:"id"`
 	Name        string     `json:"name"`
 	LastName    string     `json:"lastName"`
 	PhoneNumber string     `json:"phoneNumber"`
@@ -27,21 +30,22 @@ type AccountOut struct {
 }
 
 type UpdateAccountInput struct {
-	Name     string  `json:"name" binding:"required,min=2" example:"Aziz"`
-	LastName string  `json:"lastName" binding:"required,min=2" example:"Farkhadov"`
-	Password *string `json:"password" binding:"min=5,max=60"`
+	ID       uuid.UUID `json:"-"`
+	Name     string    `json:"name" binding:"required,min=2" example:"Aziz"`
+	LastName string    `json:"lastName" binding:"required,min=2" example:"Farkhadov"`
+	Password *string   `json:"password" binding:"min=5,max=60"`
 }
 
 type SignUpAccountInput struct {
 	Name        string     `json:"name" binding:"required,min=2" example:"Aziz"`
 	LastName    string     `json:"lastName" binding:"required,min=2" example:"Farkhadov"`
-	PhoneNumber string     `json:"phoneNumber" binding:"required,min=9,max=9" example:"998903456789"`
+	PhoneNumber string     `json:"phoneNumber" binding:"required,min=12,max=12" example:"998903456789"`
 	Password    string     `json:"password" binding:"required,min=5,max=60"`
-	Birthday    *time.Time `json:"birthday" time_format:"2006-01-02" example:"2011-01-11"`
+	Birthday    *time.Time `json:"birthday" example:"2011-01-11T00:00:00Z"`
 }
 
 type SingInAccountInput struct {
-	PhoneNumber string `json:"phoneNumber" binding:"required,min=9,max=9" example:"998903456789"`
+	PhoneNumber string `json:"phoneNumber" binding:"required,min=12,max=12" example:"998901231313"`
 	Password    string `json:"password" binding:"required,min=5,max=60"`
 }
 

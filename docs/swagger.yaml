@@ -1,36 +1,92 @@
 definitions:
-  models.CreateSettingInput:
+  models.AccountOut:
     properties:
-      key:
+      birthday:
         type: string
-      title:
-        type: string
-      value:
-        type: string
-    type: object
-  models.Settings:
-    properties:
       createdAt:
         type: string
       id:
-        type: integer
-      key:
         type: string
-      title:
+      lastName:
+        type: string
+      lastVisit:
+        type: string
+      name:
+        type: string
+      password:
+        type: string
+      phoneNumber:
         type: string
       updatedAt:
         type: string
-      value:
+    type: object
+  models.SignUpAccountInput:
+    properties:
+      birthday:
+        example: "2011-01-11T00:00:00Z"
+        type: string
+      lastName:
+        example: Farkhadov
+        minLength: 2
+        type: string
+      name:
+        example: Aziz
+        minLength: 2
+        type: string
+      password:
+        maxLength: 60
+        minLength: 5
+        type: string
+      phoneNumber:
+        example: "998903456789"
+        maxLength: 12
+        minLength: 12
+        type: string
+    required:
+    - lastName
+    - name
+    - password
+    - phoneNumber
+    type: object
+  models.SingInAccountInput:
+    properties:
+      password:
+        maxLength: 60
+        minLength: 5
+        type: string
+      phoneNumber:
+        example: "998901231313"
+        maxLength: 12
+        minLength: 12
+        type: string
+    required:
+    - password
+    - phoneNumber
+    type: object
+  models.Tokens:
+    properties:
+      accessToken:
+        type: string
+      refreshToken:
         type: string
     type: object
-  models.UpdateSettingInput:
+  models.UpdateAccountInput:
     properties:
-      key:
+      lastName:
+        example: Farkhadov
+        minLength: 2
         type: string
-      title:
+      name:
+        example: Aziz
+        minLength: 2
         type: string
-      value:
+      password:
+        maxLength: 60
+        minLength: 5
         type: string
+    required:
+    - lastName
+    - name
     type: object
   v1.Response:
     properties:
@@ -40,45 +96,25 @@ definitions:
 info:
   contact: {}
 paths:
-  /v1/settings:
-    get:
+  /api/v1/accounts/:
+    put:
       consumes:
       - application/json
-      description: This api for get Settings
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/models.Settings'
-            type: array
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.Response'
-      summary: Get all Settings
-      tags:
-      - Settings
-    post:
-      consumes:
-      - application/json
-      description: This API to create a setting.
+      description: This API to update an account.
       parameters:
       - description: data body
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/models.CreateSettingInput'
+          $ref: '#/definitions/models.UpdateAccountInput'
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
-            $ref: '#/definitions/models.Settings'
+            $ref: '#/definitions/models.AccountOut'
         "400":
           description: Bad Request
           schema:
@@ -91,79 +127,21 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.Response'
-      summary: Create a setting.
+      summary: Update an account.
       tags:
-      - Settings
-  /v1/settings-url/{url}:
+      - Accounts
+  /api/v1/accounts/me:
     get:
       consumes:
       - application/json
-      description: This API to get setting by url.
-      parameters:
-      - description: url for get Setting
-        format: id
-        in: path
-        name: url
-        required: true
-        type: string
+      description: This API to get account by id.
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.Settings'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/v1.Response'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/v1.Response'
-      summary: Get setting by url.
-      tags:
-      - Settings
-  /v1/settings/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: This API to delete a setting.
-      parameters:
-      - description: id for delete Setting
-        format: id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/v1.Response'
-      summary: Delete a setting.
-      tags:
-      - Settings
-    get:
-      consumes:
-      - application/json
-      description: This API to get setting by id.
-      parameters:
-      - description: id for get Setting
-        format: id
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/models.Settings'
+            $ref: '#/definitions/models.AccountOut'
         "400":
           description: Bad Request
           schema:
@@ -176,33 +154,28 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.Response'
-      summary: Get setting by id.
+      summary: Get account by id.
       tags:
-      - Settings
-    put:
+      - Accounts
+  /api/v1/accounts/sing-in:
+    post:
       consumes:
       - application/json
-      description: This API to update a setting.
+      description: This API to Sing Up an account.
       parameters:
-      - description: id for update Setting
-        format: id
-        in: path
-        name: id
-        required: true
-        type: integer
       - description: data body
         in: body
         name: data
         required: true
         schema:
-          $ref: '#/definitions/models.UpdateSettingInput'
+          $ref: '#/definitions/models.SingInAccountInput'
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
+        "201":
+          description: Created
           schema:
-            $ref: '#/definitions/models.Settings'
+            $ref: '#/definitions/models.Tokens'
         "400":
           description: Bad Request
           schema:
@@ -215,7 +188,41 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/v1.Response'
-      summary: Update a setting.
+      summary: Sing Up an account.
       tags:
-      - Settings
+      - Accounts
+  /api/v1/accounts/sing-up:
+    post:
+      consumes:
+      - application/json
+      description: This API to Sing Up an account.
+      parameters:
+      - description: data body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.SignUpAccountInput'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.AccountOut'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Response'
+      summary: Sing Up an account.
+      tags:
+      - Accounts
 swagger: "2.0"

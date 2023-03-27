@@ -8,7 +8,7 @@ import (
 func AutoMigrate(db *gorm.DB) error {
 
 	err := db.AutoMigrate(
-		&models.Users{},
+		&models.Accounts{},
 	)
 
 	return err

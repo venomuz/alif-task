@@ -37,23 +37,24 @@ type (
 		Database string `mapstructure:"database" envconfig:"PSQL_DATABASE"`
 	}
 	AuthConfig struct {
-		UsersSecret string `mapstructure:"users_secret" envconfig:"AUTH_USERS_SECRET"`
-		UsersKey    string `mapstructure:"users_key" envconfig:"AUTH_USERS_KEY"`
+		JwtSigningKey   string        `mapstructure:"jwt_signing_key" envconfig:"JWT_SIGNING_KEY"`
+		AccessTokenTTL  time.Duration `mapstructure:"access_token_ttl" envconfig:"ACCESS_TOKEN_TTL"`
+		RefreshTokenTTL time.Duration `mapstructure:"refresh_token_ttl" envconfig:"REFRESH_TOKEN_TTL"`
 	}
 )
 
-func Init(path string) (*Config, error) {
+func Init(path string) (Config, error) {
 	var cfg Config
 
 	if err := unmarshalYML(&cfg, path); err != nil {
-		return &Config{}, err
+		return Config{}, err
 	}
 
 	if err := unmarshalENV(&cfg); err != nil {
-		return &Config{}, err
+		return Config{}, err
 	}
 
-	return &cfg, nil
+	return cfg, nil
 }
 
 func unmarshalYML(cfg *Config, path string) error {

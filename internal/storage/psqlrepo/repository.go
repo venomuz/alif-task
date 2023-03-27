@@ -2,6 +2,7 @@ package psqlrepo
 
 import (
 	"context"
+	"github.com/google/uuid"
 	"github.com/venomuz/alif-task/internal/models"
 	"gorm.io/gorm"
 )
@@ -9,7 +10,9 @@ import (
 type Accounts interface {
 	Create(ctx context.Context, account *models.AccountOut) error
 	Update(ctx context.Context, account *models.AccountOut) error
-	GetByID(ctx context.Context, ID uint32) (models.AccountOut, error)
+	UpdateLastVisit(ctx context.Context, account *models.AccountOut) error
+	GetByID(ctx context.Context, ID uuid.UUID) (models.AccountOut, error)
+	GetByPhoneNumber(ctx context.Context, phone string) (models.AccountOut, error)
 	GetAll(ctx context.Context) ([]models.AccountOut, error)
 }
 
