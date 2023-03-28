@@ -12,9 +12,10 @@ import (
 	"time"
 )
 
-func NewAccountsService(accountsRepo psqlrepo.Accounts, hasher hash.PasswordHasher, tokenManager auth.TokenManager) *AccountsService {
+func NewAccountsService(accountsRepo psqlrepo.Accounts, walletsRepo psqlrepo.Wallets, hasher hash.PasswordHasher, tokenManager auth.TokenManager) *AccountsService {
 	return &AccountsService{
 		accountsRepo: accountsRepo,
+		walletsRepo:  walletsRepo,
 		hasher:       hasher,
 		tokenManager: tokenManager,
 	}
@@ -22,6 +23,7 @@ func NewAccountsService(accountsRepo psqlrepo.Accounts, hasher hash.PasswordHash
 
 type AccountsService struct {
 	accountsRepo psqlrepo.Accounts
+	walletsRepo  psqlrepo.Wallets
 	hasher       hash.PasswordHasher
 	tokenManager auth.TokenManager
 }
@@ -46,12 +48,27 @@ func (a *AccountsService) SingUp(ctx context.Context, input models.SignUpAccount
 		PhoneNumber: input.PhoneNumber,
 		Birthday:    input.Birthday,
 		Password:    password,
+		PinCode:     input.PinCode,
 		CreatedAt:   &timeNow,
 	}
 
 	err = a.accountsRepo.Create(ctx, &account)
+	if err != nil {
+		return models.AccountOut{}, err
+	}
 
-	return account, err
+	wallet := models.WalletOut{
+		ID:        uuid.New(),
+		AccountID: account.ID,
+		CreatedAt: account.CreatedAt,
+	}
+
+	err = a.walletsRepo.Create(ctx, &wallet)
+	if err != nil {
+		return models.AccountOut{}, err
+	}
+
+	return account, nil
 }
 
 func (a *AccountsService) SingIn(ctx context.Context, input models.SingInAccountInput) (models.Tokens, error) {
@@ -88,8 +105,26 @@ func (a *AccountsService) SingIn(ctx context.Context, input models.SingInAccount
 }
 
 func (a *AccountsService) Update(ctx context.Context, input models.UpdateAccountInput) (models.AccountOut, error) {
-	//TODO implement me
-	panic("implement me")
+	timeNow := time.Now()
+
+	account := models.AccountOut{
+		ID:        input.ID,
+		Name:      input.Name,
+		LastName:  input.LastName,
+		UpdatedAt: &timeNow,
+	}
+
+	if input.Password != nil {
+		password, err := a.hasher.String(*input.Password)
+		if err != nil {
+			return models.AccountOut{}, err
+		}
+		account.Password = password
+	}
+
+	err := a.accountsRepo.Update(ctx, &account)
+
+	return models.AccountOut{}, err
 }
 
 func (a *AccountsService) GetByID(ctx context.Context, ID uint32) (models.AccountOut, error) {

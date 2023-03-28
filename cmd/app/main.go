@@ -3,10 +3,13 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
+	"github.com/go-redis/redis/v8"
 	"github.com/venomuz/alif-task/internal/config"
 	"github.com/venomuz/alif-task/internal/migration"
 	"github.com/venomuz/alif-task/internal/service"
 	"github.com/venomuz/alif-task/internal/storage/psqlrepo"
+	"github.com/venomuz/alif-task/internal/storage/rdb"
 	"github.com/venomuz/alif-task/internal/transport/rest"
 	"github.com/venomuz/alif-task/internal/transport/rest/server"
 	"github.com/venomuz/alif-task/pkg/auth"
@@ -38,6 +41,11 @@ func main() {
 		return
 	}
 
+	rdbC := redis.NewClient(&redis.Options{
+		Addr:     cfg.REDIS.Host + fmt.Sprintf(":%d", cfg.REDIS.Port),
+		Password: cfg.REDIS.Password, // no password set
+	})
+
 	// Gorm Auto Migration
 	err = migration.AutoMigrate(DB)
 	if err != nil {
@@ -47,6 +55,8 @@ func main() {
 
 	// Initialize Repositories Postgresql
 	psqlRepos := psqlrepo.NewRepositories(DB)
+
+	redsRepos := rdb.NewRedisRepo(rdbC)
 
 	// Initialize hasher
 	hasher := hash.NewPasswordHasher()

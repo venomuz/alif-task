@@ -16,6 +16,16 @@ type Accounts interface {
 	GetAll(ctx context.Context) ([]models.AccountOut, error)
 }
 
+type Transactions interface {
+	TopUp(ctx context.Context, input *models.TransactionOut) error
+	TransferByPhoneNumber(ctx context.Context, input *models.TransactionOut) error
+}
+
+type Wallets interface {
+	Create(ctx context.Context, wallet *models.WalletOut) error
+	GetByAccountID(ctx context.Context, accountID uuid.UUID) (models.WalletOut, error)
+}
+
 type Settings interface {
 	Create(ctx context.Context, setting *models.SettingOut) error
 	Update(ctx context.Context, setting *models.SettingOut) error
@@ -25,20 +35,18 @@ type Settings interface {
 	DeleteByID(ctx context.Context, ID uint32) error
 }
 
-type Users interface {
-	GetByUsername(ctx context.Context, username string) (models.Users, error)
-}
-
 type Repositories struct {
-	Accounts Accounts
-	Settings Settings
-	Users    Users
+	Accounts     Accounts
+	Settings     Settings
+	Transactions Transactions
+	Wallets      Wallets
 }
 
 func NewRepositories(db *gorm.DB) *Repositories {
 	return &Repositories{
-		Accounts: NewAccountsRepo(db),
-		Settings: NewSettingsRepo(db),
-		Users:    NewUsersRepo(db),
+		Accounts:     NewAccountsRepo(db),
+		Settings:     NewSettingsRepo(db),
+		Transactions: NewTransactionsRepo(db),
+		Wallets:      NewWalletsRepo(db),
 	}
 }

@@ -133,8 +133,8 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "201": {
-                        "description": "Created",
+                    "200": {
+                        "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/models.Tokens"
                         }
@@ -211,6 +211,151 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/accounts/wallets/balance": {
+            "get": {
+                "description": "This API to get wallet by accountId.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Wallets"
+                ],
+                "summary": "Get wallet by accountId.",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.WalletOut"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounts/wallets/top-up": {
+            "post": {
+                "description": "This API to top up wallet balance.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Wallets"
+                ],
+                "summary": "Top up wallet balance.",
+                "parameters": [
+                    {
+                        "description": "data body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TopUpInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TransactionOut"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/accounts/wallets/transfer-by-phone": {
+            "post": {
+                "description": "This API to top up wallet balance.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Wallets"
+                ],
+                "summary": "Top up transfer funds to account balance ny phone number.",
+                "parameters": [
+                    {
+                        "description": "data body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.TransferByPhoneNumberInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TransactionOut"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -252,7 +397,8 @@ const docTemplate = `{
                 "lastName",
                 "name",
                 "password",
-                "phoneNumber"
+                "phoneNumber",
+                "pinCode"
             ],
             "properties": {
                 "birthday": {
@@ -272,13 +418,20 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "maxLength": 60,
-                    "minLength": 5
+                    "minLength": 5,
+                    "example": "admin"
                 },
                 "phoneNumber": {
                     "type": "string",
                     "maxLength": 12,
                     "minLength": 12,
                     "example": "998903456789"
+                },
+                "pinCode": {
+                    "type": "integer",
+                    "maximum": 9999,
+                    "minimum": 1000,
+                    "example": 1111
                 }
             }
         },
@@ -292,7 +445,8 @@ const docTemplate = `{
                 "password": {
                     "type": "string",
                     "maxLength": 60,
-                    "minLength": 5
+                    "minLength": 5,
+                    "example": "admin123"
                 },
                 "phoneNumber": {
                     "type": "string",
@@ -310,6 +464,81 @@ const docTemplate = `{
                 },
                 "refreshToken": {
                     "type": "string"
+                }
+            }
+        },
+        "models.TopUpInput": {
+            "type": "object",
+            "required": [
+                "amount",
+                "pinCode"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "minimum": 500
+                },
+                "pinCode": {
+                    "type": "integer",
+                    "maximum": 9999,
+                    "minimum": 1000
+                }
+            }
+        },
+        "models.TransactionOut": {
+            "type": "object",
+            "properties": {
+                "accountBalance": {
+                    "type": "number"
+                },
+                "accountId": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "number"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "receiver": {
+                    "type": "string"
+                },
+                "sender": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.TransferByPhoneNumberInput": {
+            "type": "object",
+            "required": [
+                "amount",
+                "pinCode",
+                "receiverPhone"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "minimum": 500
+                },
+                "pinCode": {
+                    "type": "integer",
+                    "maximum": 9999,
+                    "minimum": 1000
+                },
+                "receiverPhone": {
+                    "type": "string",
+                    "maxLength": 12,
+                    "minLength": 12,
+                    "example": "998903456789"
                 }
             }
         },
@@ -334,6 +563,26 @@ const docTemplate = `{
                     "type": "string",
                     "maxLength": 60,
                     "minLength": 5
+                }
+            }
+        },
+        "models.WalletOut": {
+            "type": "object",
+            "properties": {
+                "accountId": {
+                    "type": "string"
+                },
+                "balance": {
+                    "type": "number"
+                },
+                "createAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "updatedAt": {
+                    "type": "string"
                 }
             }
         },

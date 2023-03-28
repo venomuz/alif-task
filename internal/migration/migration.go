@@ -9,6 +9,8 @@ func AutoMigrate(db *gorm.DB) error {
 
 	err := db.AutoMigrate(
 		&models.Accounts{},
+		&models.Transactions{},
+		&models.Wallets{},
 	)
 
 	return err

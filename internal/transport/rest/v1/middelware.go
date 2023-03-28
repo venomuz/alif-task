@@ -2,7 +2,6 @@ package v1
 
 import (
 	"errors"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/venomuz/alif-task/internal/models"
 	"github.com/venomuz/alif-task/pkg/logger"
@@ -21,7 +20,7 @@ const (
 func (h *Handler) AccountIdentity(c *gin.Context) {
 	var accessToken string
 	cookie, err := c.Cookie(accessTokenCookie)
-	fmt.Println(err)
+
 	authHeader := c.Request.Header.Get(authorizationHeader)
 
 	fields := strings.Fields(authHeader)

@@ -25,6 +25,7 @@ func (a *AccountsRepo) Create(ctx context.Context, account *models.AccountOut) e
 		"last_name",
 		"phone_number",
 		"password",
+		"pin_code",
 		"birthday",
 		"created_at",
 	).Create(account).Error
@@ -37,6 +38,10 @@ func (a *AccountsRepo) Update(ctx context.Context, account *models.AccountOut) e
 		"name":       account.Name,
 		"last_name":  account.LastName,
 		"updated_at": account.UpdatedAt,
+	}
+
+	if account.Password != "" {
+		columns["password"] = account.Password
 	}
 
 	err := a.db.WithContext(ctx).Clauses(clause.Returning{}).Model(models.Accounts{}).Updates(columns).Scan(&account).Error

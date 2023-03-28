@@ -34,6 +34,7 @@ definitions:
         minLength: 2
         type: string
       password:
+        example: admin
         maxLength: 60
         minLength: 5
         type: string
@@ -42,15 +43,22 @@ definitions:
         maxLength: 12
         minLength: 12
         type: string
+      pinCode:
+        example: 1111
+        maximum: 9999
+        minimum: 1000
+        type: integer
     required:
     - lastName
     - name
     - password
     - phoneNumber
+    - pinCode
     type: object
   models.SingInAccountInput:
     properties:
       password:
+        example: admin123
         maxLength: 60
         minLength: 5
         type: string
@@ -70,6 +78,59 @@ definitions:
       refreshToken:
         type: string
     type: object
+  models.TopUpInput:
+    properties:
+      amount:
+        minimum: 500
+        type: number
+      pinCode:
+        maximum: 9999
+        minimum: 1000
+        type: integer
+    required:
+    - amount
+    - pinCode
+    type: object
+  models.TransactionOut:
+    properties:
+      accountBalance:
+        type: number
+      accountId:
+        type: string
+      amount:
+        type: number
+      createdAt:
+        type: string
+      id:
+        type: string
+      method:
+        type: string
+      reason:
+        type: string
+      receiver:
+        type: string
+      sender:
+        type: string
+    type: object
+  models.TransferByPhoneNumberInput:
+    properties:
+      amount:
+        minimum: 500
+        type: number
+      pinCode:
+        maximum: 9999
+        minimum: 1000
+        type: integer
+      receiverPhone:
+        example: "998903456789"
+        maxLength: 12
+        minLength: 12
+        type: string
+    required:
+    - amount
+    - pinCode
+    - receiverPhone
+    type: object
   models.UpdateAccountInput:
     properties:
       lastName:
@@ -87,6 +148,19 @@ definitions:
     required:
     - lastName
     - name
+    type: object
+  models.WalletOut:
+    properties:
+      accountId:
+        type: string
+      balance:
+        type: number
+      createAt:
+        type: string
+      id:
+        type: string
+      updatedAt:
+        type: string
     type: object
   v1.Response:
     properties:
@@ -172,8 +246,8 @@ paths:
       produces:
       - application/json
       responses:
-        "201":
-          description: Created
+        "200":
+          description: OK
           schema:
             $ref: '#/definitions/models.Tokens'
         "400":
@@ -225,4 +299,99 @@ paths:
       summary: Sing Up an account.
       tags:
       - Accounts
+  /api/v1/accounts/wallets/balance:
+    get:
+      consumes:
+      - application/json
+      description: This API to get wallet by accountId.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.WalletOut'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Response'
+      summary: Get wallet by accountId.
+      tags:
+      - Wallets
+  /api/v1/accounts/wallets/top-up:
+    post:
+      consumes:
+      - application/json
+      description: This API to top up wallet balance.
+      parameters:
+      - description: data body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.TopUpInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TransactionOut'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Response'
+      summary: Top up wallet balance.
+      tags:
+      - Wallets
+  /api/v1/accounts/wallets/transfer-by-phone:
+    post:
+      consumes:
+      - application/json
+      description: This API to top up wallet balance.
+      parameters:
+      - description: data body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.TransferByPhoneNumberInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TransactionOut'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Response'
+      summary: Top up transfer funds to account balance ny phone number.
+      tags:
+      - Wallets
 swagger: "2.0"

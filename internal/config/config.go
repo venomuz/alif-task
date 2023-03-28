@@ -20,6 +20,7 @@ type (
 		Environment string `mapstructure:"env" envconfig:"APP_ENV"`
 		HTTP        HTTPConfig
 		PSQL        PSQLConfig
+		REDIS       RedisConfig
 		AUTH        AuthConfig
 	}
 	HTTPConfig struct {
@@ -36,6 +37,13 @@ type (
 		Password string `mapstructure:"password" envconfig:"PSQL_PASSWORD"`
 		Database string `mapstructure:"database" envconfig:"PSQL_DATABASE"`
 	}
+
+	RedisConfig struct {
+		Host     string `mapstructure:"host" envconfig:"REDIS_HOST"`
+		Port     int    `mapstructure:"port" envconfig:"REDIS_PORT"`
+		Password string `mapstructure:"password" envconfig:"REDIS_PASSWORD"`
+	}
+
 	AuthConfig struct {
 		JwtSigningKey   string        `mapstructure:"jwt_signing_key" envconfig:"JWT_SIGNING_KEY"`
 		AccessTokenTTL  time.Duration `mapstructure:"access_token_ttl" envconfig:"ACCESS_TOKEN_TTL"`
@@ -79,6 +87,10 @@ func unmarshalYML(cfg *Config, path string) error {
 	}
 
 	if err := viper.UnmarshalKey("auth", &cfg.AUTH); err != nil {
+		return err
+	}
+
+	if err := viper.UnmarshalKey("redis", &cfg.REDIS); err != nil {
 		return err
 	}
 
