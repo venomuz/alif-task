@@ -356,6 +356,58 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/accounts/wallets/withdrawal": {
+            "post": {
+                "description": "This API to Withdrawal Funds from balance.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Wallets"
+                ],
+                "summary": "Top Withdrawal Funds from balance.",
+                "parameters": [
+                    {
+                        "description": "data body",
+                        "name": "data",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.WithdrawalFundsInput"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.TransactionOut"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/v1.Response"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -560,9 +612,7 @@ const docTemplate = `{
                     "example": "Aziz"
                 },
                 "password": {
-                    "type": "string",
-                    "maxLength": 60,
-                    "minLength": 5
+                    "type": "string"
                 }
             }
         },
@@ -575,7 +625,7 @@ const docTemplate = `{
                 "balance": {
                     "type": "number"
                 },
-                "createAt": {
+                "createdAt": {
                     "type": "string"
                 },
                 "id": {
@@ -583,6 +633,24 @@ const docTemplate = `{
                 },
                 "updatedAt": {
                     "type": "string"
+                }
+            }
+        },
+        "models.WithdrawalFundsInput": {
+            "type": "object",
+            "required": [
+                "amount",
+                "pinCode"
+            ],
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "minimum": 500
+                },
+                "pinCode": {
+                    "type": "integer",
+                    "maximum": 9999,
+                    "minimum": 1000
                 }
             }
         },

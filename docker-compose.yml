@@ -1,0 +1,44 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: app_go
+    restart: always
+    depends_on:
+      - postgresdb
+      - redis
+    ports:
+      - "8080:8080"
+    env_file:
+      - app.env
+
+  postgresdb:
+    container_name: postgresdb
+    image: postgres:14.1
+    expose:
+      - "5432"
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    command: -p 5432
+    env_file:
+      - app.env
+
+  redis:
+    container_name: "redis"
+    image: redis:alpine
+    command: redis-server /usr/local/etc/redis/redis.conf --requirepass 112233
+    depends_on:
+      - postgresdb
+    ports:
+      - "6379:6379"
+    volumes:
+      - $PWD/redis.conf:/usr/local/etc/redis/redis.conf
+    env_file:
+      - app.env
+
+
+volumes:
+  db_data:

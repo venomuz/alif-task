@@ -142,8 +142,6 @@ definitions:
         minLength: 2
         type: string
       password:
-        maxLength: 60
-        minLength: 5
         type: string
     required:
     - lastName
@@ -155,12 +153,25 @@ definitions:
         type: string
       balance:
         type: number
-      createAt:
+      createdAt:
         type: string
       id:
         type: string
       updatedAt:
         type: string
+    type: object
+  models.WithdrawalFundsInput:
+    properties:
+      amount:
+        minimum: 500
+        type: number
+      pinCode:
+        maximum: 9999
+        minimum: 1000
+        type: integer
+    required:
+    - amount
+    - pinCode
     type: object
   v1.Response:
     properties:
@@ -392,6 +403,40 @@ paths:
           schema:
             $ref: '#/definitions/v1.Response'
       summary: Top up transfer funds to account balance ny phone number.
+      tags:
+      - Wallets
+  /api/v1/accounts/wallets/withdrawal:
+    post:
+      consumes:
+      - application/json
+      description: This API to Withdrawal Funds from balance.
+      parameters:
+      - description: data body
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/models.WithdrawalFundsInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.TransactionOut'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.Response'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.Response'
+      summary: Top Withdrawal Funds from balance.
       tags:
       - Wallets
 swagger: "2.0"

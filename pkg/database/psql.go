@@ -16,6 +16,7 @@ func NewClient(cfg config.Config) (*gorm.DB, error) {
 		cfg.PSQL.Password,
 		cfg.PSQL.Database,
 	)
+	fmt.Println(dsn)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{SingularTable: true},

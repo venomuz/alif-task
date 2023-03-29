@@ -43,3 +43,10 @@ type TransferByPhoneNumberInput struct {
 	Amount         float64   `json:"amount" binding:"required,min=500"`
 	PinCode        uint16    `json:"pinCode" binding:"required,min=1000,max=9999"`
 }
+
+type WithdrawalFundsInput struct {
+	AccountID      uuid.UUID `json:"-"`
+	AccountPinCode uint16    `json:"-"`
+	Amount         float64   `json:"amount"  binding:"required,min=500"`
+	PinCode        uint16    `json:"pinCode" binding:"required,min=1000,max=9999"`
+}

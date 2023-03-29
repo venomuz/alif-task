@@ -35,7 +35,7 @@ type UpdateAccountInput struct {
 	ID       uuid.UUID `json:"-"`
 	Name     string    `json:"name" binding:"required,min=2" example:"Aziz"`
 	LastName string    `json:"lastName" binding:"required,min=2" example:"Farkhadov"`
-	Password *string   `json:"password" binding:"min=5,max=60"`
+	Password *string   `json:"password"`
 }
 
 type SignUpAccountInput struct {

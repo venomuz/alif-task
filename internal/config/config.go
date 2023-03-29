@@ -31,11 +31,11 @@ type (
 		MaxHeaderMegabytes int           `mapstructure:"max_header_bytes" envconfig:"HTTP_MAX_HEADER_BYTES"`
 	}
 	PSQLConfig struct {
-		Host     string `mapstructure:"host" envconfig:"PSQL_HOST"`
-		Port     string `mapstructure:"port" envconfig:"PSQL_PORT"`
-		User     string `mapstructure:"user" envconfig:"PSQL_USER"`
-		Password string `mapstructure:"password" envconfig:"PSQL_PASSWORD"`
-		Database string `mapstructure:"database" envconfig:"PSQL_DATABASE"`
+		Host     string `mapstructure:"host" envconfig:"POSTGRES_HOST"`
+		Port     string `mapstructure:"port" envconfig:"POSTGRES_PORT"`
+		User     string `mapstructure:"user" envconfig:"POSTGRES_USER"`
+		Password string `mapstructure:"password" envconfig:"POSTGRES_PASSWORD"`
+		Database string `mapstructure:"database" envconfig:"POSTGRES_DB"`
 	}
 
 	RedisConfig struct {

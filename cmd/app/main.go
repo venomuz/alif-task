@@ -7,9 +7,9 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/venomuz/alif-task/internal/config"
 	"github.com/venomuz/alif-task/internal/migration"
+	"github.com/venomuz/alif-task/internal/repository/psqlrepo"
+	"github.com/venomuz/alif-task/internal/repository/rdb"
 	"github.com/venomuz/alif-task/internal/service"
-	"github.com/venomuz/alif-task/internal/storage/psqlrepo"
-	"github.com/venomuz/alif-task/internal/storage/rdb"
 	"github.com/venomuz/alif-task/internal/transport/rest"
 	"github.com/venomuz/alif-task/internal/transport/rest/server"
 	"github.com/venomuz/alif-task/pkg/auth"
@@ -67,6 +67,7 @@ func main() {
 	// Initialize Services
 	services := service.NewServices(service.Deps{
 		PsqlRepo:     psqlRepos,
+		RedisRepo:    redsRepos,
 		Cfg:          cfg,
 		Hash:         hasher,
 		TokenManager: tokenManager,
@@ -106,6 +107,7 @@ func main() {
 	ctx, shutdown := context.WithTimeout(context.Background(), timeout)
 	defer shutdown()
 
+	//stop server
 	if err := srv.Stop(ctx); err != nil {
 		logger.Zap.Fatal("filed to stop server", logger.Error(err))
 	}

@@ -12,7 +12,7 @@ func (h *Handler) initAccountsRoutes(v1 *gin.RouterGroup) {
 
 	accounts.POST("/sing-up", h.AccountSingUp)
 	accounts.POST("/sing-in", h.AccountSignIn)
-	accounts.POST("/refresh", h.AccountRefresh)
+	accounts.POST("/refresh", h.AccountRefreshToken)
 
 	authenticated := accounts.Group("/", h.AccountIdentity)
 
@@ -23,8 +23,9 @@ func (h *Handler) initAccountsRoutes(v1 *gin.RouterGroup) {
 		wallets := authenticated.Group("/wallets")
 		{
 			wallets.GET("/balance", h.AccountGetWallet)
-			wallets.POST("/top-up", h.AccountWalletTopUp)
+			wallets.POST("/top-up", h.AccountTopUpWallet)
 			wallets.POST("/transfer-by-phone", h.AccountFundTransfer)
+			wallets.POST("/withdrawal", h.AccountWithdrawalFundsFromWallet)
 		}
 	}
 }
@@ -43,7 +44,7 @@ func (h *Handler) initAccountsRoutes(v1 *gin.RouterGroup) {
 func (h *Handler) AccountSingUp(c *gin.Context) {
 	var body models.SignUpAccountInput
 
-	err := c.ShouldBind(&body)
+	err := c.ShouldBindJSON(&body)
 
 	if err != nil {
 		newResponse(c, http.StatusBadRequest, err.Error())
@@ -75,7 +76,7 @@ func (h *Handler) AccountSingUp(c *gin.Context) {
 func (h *Handler) AccountSignIn(c *gin.Context) {
 	var body models.SingInAccountInput
 
-	err := c.ShouldBind(&body)
+	err := c.ShouldBindJSON(&body)
 
 	if err != nil {
 		newResponse(c, http.StatusBadRequest, err.Error())
@@ -96,7 +97,7 @@ func (h *Handler) AccountSignIn(c *gin.Context) {
 	c.JSON(http.StatusOK, models.Tokens{AccessToken: tokens.AccessToken})
 }
 
-func (h *Handler) AccountRefresh(c *gin.Context) {
+func (h *Handler) AccountRefreshToken(c *gin.Context) {
 
 }
 
@@ -121,7 +122,7 @@ func (h *Handler) AccountUpdate(c *gin.Context) {
 		return
 	}
 
-	err = c.ShouldBind(&body)
+	err = c.ShouldBindJSON(&body)
 	if err != nil {
 		newResponse(c, http.StatusBadRequest, models.ErrInputBody.Error())
 		logger.Zap.Error("error while bind to json AccountUpdate", logger.Error(err))
@@ -189,7 +190,7 @@ func (h *Handler) AccountGetWallet(c *gin.Context) {
 	c.JSON(http.StatusOK, wallet)
 }
 
-// AccountWalletTopUp
+// AccountTopUpWallet
 //	@Summary		Top up wallet balance.
 //	@Description	This API to top up wallet balance.
 //	@Tags			Wallets
@@ -200,7 +201,7 @@ func (h *Handler) AccountGetWallet(c *gin.Context) {
 //	@Failure		400,404	{object}	Response
 //	@Failure		500		{object}	Response
 //	@Router			/api/v1/accounts/wallets/top-up [POST]
-func (h *Handler) AccountWalletTopUp(c *gin.Context) {
+func (h *Handler) AccountTopUpWallet(c *gin.Context) {
 	var body models.TopUpInput
 
 	currentAccount, err := h.GetAccountFromCtx(c)
@@ -210,10 +211,10 @@ func (h *Handler) AccountWalletTopUp(c *gin.Context) {
 		return
 	}
 
-	err = c.ShouldBind(&body)
+	err = c.ShouldBindJSON(&body)
 	if err != nil {
 		newResponse(c, http.StatusBadRequest, models.ErrInputBody.Error())
-		logger.Zap.Error("error while bind to json AccountWalletTopUp", logger.Error(err))
+		logger.Zap.Error("error while bind to json AccountTopUpWallet", logger.Error(err))
 		return
 	}
 
@@ -224,7 +225,7 @@ func (h *Handler) AccountWalletTopUp(c *gin.Context) {
 	transaction, err := h.services.Transactions.TopUp(c.Request.Context(), body)
 	if err != nil {
 		newResponse(c, http.StatusInternalServerError, err.Error())
-		logger.Zap.Error("error while update account", logger.Error(err))
+		logger.Zap.Error("error while top up wallet account", logger.Error(err))
 		return
 	}
 
@@ -252,10 +253,10 @@ func (h *Handler) AccountFundTransfer(c *gin.Context) {
 		return
 	}
 
-	err = c.ShouldBind(&body)
+	err = c.ShouldBindJSON(&body)
 	if err != nil {
 		newResponse(c, http.StatusBadRequest, models.ErrInputBody.Error())
-		logger.Zap.Error("error while bind to json AccountWalletTopUp", logger.Error(err))
+		logger.Zap.Error("error while bind to json AccountTopUpWallet", logger.Error(err))
 		return
 	}
 
@@ -264,6 +265,48 @@ func (h *Handler) AccountFundTransfer(c *gin.Context) {
 	body.AccountPinCode = currentAccount.PinCode
 
 	transaction, err := h.services.Transactions.TransferByPhoneNumber(c.Request.Context(), body)
+	if err != nil {
+		newResponse(c, http.StatusInternalServerError, err.Error())
+		logger.Zap.Error("error while update account", logger.Error(err))
+		return
+	}
+
+	c.JSON(http.StatusOK, transaction)
+}
+
+// AccountWithdrawalFundsFromWallet
+//	@Summary		Top Withdrawal Funds from balance.
+//	@Description	This API to Withdrawal Funds from balance.
+//	@Tags			Wallets
+//	@Accept			json
+//	@Produce		json
+//	@Param			data	body		models.WithdrawalFundsInput	true	"data body"
+//	@Success		200		{object}	models.TransactionOut
+//	@Failure		400,404	{object}	Response
+//	@Failure		500		{object}	Response
+//	@Router			/api/v1/accounts/wallets/withdrawal [POST]
+func (h *Handler) AccountWithdrawalFundsFromWallet(c *gin.Context) {
+	var body models.WithdrawalFundsInput
+
+	currentAccount, err := h.GetAccountFromCtx(c)
+	if err != nil {
+		newResponse(c, http.StatusInternalServerError, err.Error())
+		logger.Zap.Error("error while get account from ctx", logger.Error(err))
+		return
+	}
+
+	err = c.ShouldBindJSON(&body)
+	if err != nil {
+		newResponse(c, http.StatusBadRequest, models.ErrInputBody.Error())
+		logger.Zap.Error("error while bind to json AccountWithdrawalFundsFromWallet", logger.Error(err))
+		return
+	}
+
+	body.AccountID = currentAccount.ID
+
+	body.AccountPinCode = currentAccount.PinCode
+
+	transaction, err := h.services.Transactions.WithdrawalFunds(c.Request.Context(), body)
 	if err != nil {
 		newResponse(c, http.StatusInternalServerError, err.Error())
 		logger.Zap.Error("error while update account", logger.Error(err))

@@ -15,6 +15,11 @@ psql:
   password: 112233
   database: app
 
+redis:
+  host: 127.0.0.1
+  port: 6379
+  password: 112233
+
 auth:
   jwt_signing_key: pnMZDLqtHwBnsVqHmCvRBZdBgP6eoQDdIn6mfRyfrdDHqsyK9ofLMfwBvGssPVavYKoMX5W4S6E6Q09KPCX1UAG
   access_token_ttl: 2h

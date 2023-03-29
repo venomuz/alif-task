@@ -5,7 +5,6 @@ import (
 	"github.com/google/uuid"
 	"github.com/venomuz/alif-task/internal/models"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 func NewAccountsRepo(db *gorm.DB) *AccountsRepo {
@@ -33,18 +32,24 @@ func (a *AccountsRepo) Create(ctx context.Context, account *models.AccountOut) e
 	return err
 }
 
-func (a *AccountsRepo) Update(ctx context.Context, account *models.AccountOut) error {
+func (a *AccountsRepo) Update(ctx context.Context, accountOut *models.AccountOut) error {
+
 	columns := map[string]interface{}{
-		"name":       account.Name,
-		"last_name":  account.LastName,
-		"updated_at": account.UpdatedAt,
+		"name":       accountOut.Name,
+		"last_name":  accountOut.LastName,
+		"updated_at": accountOut.UpdatedAt,
 	}
 
-	if account.Password != "" {
-		columns["password"] = account.Password
+	if accountOut.Password != "" {
+		columns["password"] = accountOut.Password
 	}
 
-	err := a.db.WithContext(ctx).Clauses(clause.Returning{}).Model(models.Accounts{}).Updates(columns).Scan(&account).Error
+	err := a.db.WithContext(ctx).Model(&models.Accounts{ID: accountOut.ID}).Updates(columns).Error
+	if err != nil {
+		return err
+	}
+
+	err = a.db.WithContext(ctx).Model(models.Accounts{}).First(accountOut, "id = ?", accountOut.ID).Error
 
 	return err
 }
@@ -73,9 +78,4 @@ func (a *AccountsRepo) GetByPhoneNumber(ctx context.Context, phone string) (mode
 	err := a.db.WithContext(ctx).Model(models.Accounts{}).First(&account, "phone_number = ?", phone).Error
 
 	return account, err
-}
-
-func (a *AccountsRepo) GetAll(ctx context.Context) ([]models.AccountOut, error) {
-	//TODO implement me
-	panic("implement me")
 }
