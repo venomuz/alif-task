@@ -8,7 +8,7 @@ import (
 	"github.com/venomuz/alif-task/internal/config"
 	"github.com/venomuz/alif-task/internal/migration"
 	"github.com/venomuz/alif-task/internal/repository/psqlrepo"
-	"github.com/venomuz/alif-task/internal/repository/rdb"
+	"github.com/venomuz/alif-task/internal/repository/redisrepo"
 	"github.com/venomuz/alif-task/internal/service"
 	"github.com/venomuz/alif-task/internal/transport/rest"
 	"github.com/venomuz/alif-task/internal/transport/rest/server"
@@ -56,7 +56,7 @@ func main() {
 	// Initialize Repositories Postgresql
 	psqlRepos := psqlrepo.NewRepositories(DB)
 
-	redsRepos := rdb.NewRedisRepo(rdbC)
+	redsRepos := redisrepo.NewRedisRepo(rdbC)
 
 	// Initialize hasher
 	hasher := hash.NewPasswordHasher()

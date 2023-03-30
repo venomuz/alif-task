@@ -6,11 +6,11 @@ import (
 	"github.com/google/uuid"
 	"github.com/venomuz/alif-task/internal/models"
 	"github.com/venomuz/alif-task/internal/repository/psqlrepo"
-	"github.com/venomuz/alif-task/internal/repository/rdb"
+	"github.com/venomuz/alif-task/internal/repository/redisrepo"
 	"time"
 )
 
-func NewWalletsService(walletsRepo psqlrepo.Wallets, rdb rdb.Repository) *WalletsService {
+func NewWalletsService(walletsRepo psqlrepo.Wallets, rdb redisrepo.Repository) *WalletsService {
 	return &WalletsService{
 		walletsRepo: walletsRepo,
 		rdb:         rdb,
@@ -19,7 +19,7 @@ func NewWalletsService(walletsRepo psqlrepo.Wallets, rdb rdb.Repository) *Wallet
 
 type WalletsService struct {
 	walletsRepo psqlrepo.Wallets
-	rdb         rdb.Repository
+	rdb         redisrepo.Repository
 }
 
 func (w *WalletsService) GetByAccountID(ctx context.Context, accountID uuid.UUID) (models.WalletOut, error) {

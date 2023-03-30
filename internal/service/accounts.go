@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/venomuz/alif-task/internal/models"
 	"github.com/venomuz/alif-task/internal/repository/psqlrepo"
-	"github.com/venomuz/alif-task/internal/repository/rdb"
+	"github.com/venomuz/alif-task/internal/repository/redisrepo"
 	"github.com/venomuz/alif-task/pkg/auth"
 	"github.com/venomuz/alif-task/pkg/hash"
 	"github.com/venomuz/alif-task/pkg/logger"
@@ -15,7 +15,7 @@ import (
 	"time"
 )
 
-func NewAccountsService(accountsRepo psqlrepo.Accounts, walletsRepo psqlrepo.Wallets, rdb rdb.Repository, hasher hash.PasswordHasher, tokenManager auth.TokenManager) *AccountsService {
+func NewAccountsService(accountsRepo psqlrepo.Accounts, walletsRepo psqlrepo.Wallets, rdb redisrepo.Repository, hasher hash.PasswordHasher, tokenManager auth.TokenManager) *AccountsService {
 	return &AccountsService{
 		accountsRepo: accountsRepo,
 		walletsRepo:  walletsRepo,
@@ -28,7 +28,7 @@ func NewAccountsService(accountsRepo psqlrepo.Accounts, walletsRepo psqlrepo.Wal
 type AccountsService struct {
 	accountsRepo psqlrepo.Accounts
 	walletsRepo  psqlrepo.Wallets
-	rdb          rdb.Repository
+	rdb          redisrepo.Repository
 	hasher       hash.PasswordHasher
 	tokenManager auth.TokenManager
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/venomuz/alif-task/internal/config"
 	"github.com/venomuz/alif-task/internal/models"
 	"github.com/venomuz/alif-task/internal/repository/psqlrepo"
-	"github.com/venomuz/alif-task/internal/repository/rdb"
+	"github.com/venomuz/alif-task/internal/repository/redisrepo"
 	"github.com/venomuz/alif-task/pkg/auth"
 	"github.com/venomuz/alif-task/pkg/hash"
 )
@@ -33,7 +33,7 @@ type Wallets interface {
 
 type Deps struct {
 	PsqlRepo     *psqlrepo.Repositories
-	RedisRepo    rdb.Repository
+	RedisRepo    redisrepo.Repository
 	Cfg          config.Config
 	Hash         hash.PasswordHasher
 	TokenManager auth.TokenManager

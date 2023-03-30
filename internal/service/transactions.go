@@ -5,13 +5,13 @@ import (
 	"github.com/google/uuid"
 	"github.com/venomuz/alif-task/internal/models"
 	"github.com/venomuz/alif-task/internal/repository/psqlrepo"
-	"github.com/venomuz/alif-task/internal/repository/rdb"
+	"github.com/venomuz/alif-task/internal/repository/redisrepo"
 	"github.com/venomuz/alif-task/pkg/logger"
 	"regexp"
 	"time"
 )
 
-func NewTransactionsService(transactionsRepo psqlrepo.Transactions, accountsRepo psqlrepo.Accounts, rdb rdb.Repository) *TransactionsService {
+func NewTransactionsService(transactionsRepo psqlrepo.Transactions, accountsRepo psqlrepo.Accounts, rdb redisrepo.Repository) *TransactionsService {
 	return &TransactionsService{
 		transactionsRepo: transactionsRepo,
 		accountsRepo:     accountsRepo,
@@ -22,7 +22,7 @@ func NewTransactionsService(transactionsRepo psqlrepo.Transactions, accountsRepo
 type TransactionsService struct {
 	transactionsRepo psqlrepo.Transactions
 	accountsRepo     psqlrepo.Accounts
-	rdb              rdb.Repository
+	rdb              redisrepo.Repository
 }
 
 func (t *TransactionsService) TopUp(ctx context.Context, input models.TopUpInput) (models.TransactionOut, error) {
