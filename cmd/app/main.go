@@ -23,6 +23,17 @@ import (
 	"time"
 )
 
+// main
+//	@title						Alif task
+//	@version					1.0
+//	@description				This is a sample server app server.
+//	@contact.name				API Support
+//	@contact.url				https://t.me/xalmatoff
+//	@contact.email				venom.uzz@mail.ru
+//	@securityDefinitions.apikey	BearerAuth
+//	@Description				Authorization for accounts
+//	@in							header
+//	@name						Authorization
 func main() {
 	// Initialize logger zap
 	logger.New("debug", "app")

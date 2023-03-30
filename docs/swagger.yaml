@@ -179,7 +179,13 @@ definitions:
         type: string
     type: object
 info:
-  contact: {}
+  contact:
+    email: venom.uzz@mail.ru
+    name: API Support
+    url: https://t.me/xalmatoff
+  description: This is a sample server app server.
+  title: Alif task
+  version: "1.0"
 paths:
   /api/v1/accounts/:
     put:
@@ -439,4 +445,10 @@ paths:
       summary: Top Withdrawal Funds from balance.
       tags:
       - Wallets
+securityDefinitions:
+  BearerAuth:
+    description: Authorization for accounts
+    in: header
+    name: Authorization
+    type: apiKey
 swagger: "2.0"

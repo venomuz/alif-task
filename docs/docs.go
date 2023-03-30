@@ -9,7 +9,11 @@ const docTemplate = `{
     "info": {
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
-        "contact": {},
+        "contact": {
+            "name": "API Support",
+            "url": "https://t.me/xalmatoff",
+            "email": "venom.uzz@mail.ru"
+        },
         "version": "{{.Version}}"
     },
     "host": "{{.Host}}",
@@ -662,17 +666,25 @@ const docTemplate = `{
                 }
             }
         }
+    },
+    "securityDefinitions": {
+        "BearerAuth": {
+            "description": "Authorization for accounts",
+            "type": "apiKey",
+            "name": "Authorization",
+            "in": "header"
+        }
     }
 }`
 
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
-	Version:          "",
+	Version:          "1.0",
 	Host:             "",
 	BasePath:         "",
 	Schemes:          []string{},
-	Title:            "",
-	Description:      "",
+	Title:            "Alif task",
+	Description:      "This is a sample server app server.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }
