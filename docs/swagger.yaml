@@ -184,7 +184,7 @@ info:
     name: API Support
     url: https://t.me/xalmatoff
   description: This is a sample server app server.
-  title: Alif task
+  title: task
   version: "1.0"
 paths:
   /api/v1/accounts/:

@@ -2,7 +2,7 @@
     "swagger": "2.0",
     "info": {
         "description": "This is a sample server app server.",
-        "title": "Alif task",
+        "title": "task",
         "contact": {
             "name": "API Support",
             "url": "https://t.me/xalmatoff",
