@@ -24,7 +24,7 @@ import (
 )
 
 // main
-//	@title						Alif task
+//	@title						task
 //	@version					1.0
 //	@description				This is a sample server app server.
 //	@contact.name				API Support
